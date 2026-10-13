@@ -1,0 +1,207 @@
+/* The Tale — an illuminated manuscript in earth tones */
+
+:root {
+  --loam: #2b2117;
+  --loam-deep: #1c150e;
+  --parchment: #e4d3ae;
+  --parchment-edge: #c9b080;
+  --ink: #3a2a1a;
+  --ink-soft: #6b5235;
+  --moss: #4f5a2c;
+  --rust: #8a3b1c;
+  --ochre: #b0812f;
+
+  --cinzel: "Cinzel Decorative", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--loam-deep);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 1.5rem 1rem 4rem;
+  color: var(--ink);
+  font-family: var(--cinzel);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 30%, #3b2d1e 0%, transparent 70%),
+    radial-gradient(circle at 15% 85%, rgba(79, 90, 44, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(138, 59, 28, 0.2) 0%, transparent 40%),
+    var(--loam);
+}
+
+a {
+  color: var(--rust);
+  text-decoration-color: rgba(138, 59, 28, 0.4);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--ochre);
+  outline-offset: 3px;
+}
+
+/* ---------- Back link ---------- */
+
+.back {
+  max-width: 46rem;
+  margin: 0 auto 1.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.back a {
+  color: var(--parchment-edge);
+  text-decoration: none;
+}
+
+.back a:hover {
+  color: var(--parchment);
+}
+
+/* ---------- Parchment ---------- */
+
+.manuscript {
+  position: relative;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 4.5rem) clamp(1.5rem, 7vw, 5rem);
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255, 248, 225, 0.45) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(150, 110, 60, 0.25) 0%, transparent 55%),
+    var(--parchment);
+  box-shadow:
+    inset 0 0 70px rgba(110, 75, 35, 0.45),
+    inset 0 0 6px rgba(80, 55, 25, 0.5),
+    0 25px 60px rgba(0, 0, 0, 0.55);
+  border-radius: 3px;
+}
+
+/* inner ruled border */
+.manuscript::before {
+  content: "";
+  position: absolute;
+  inset: 0.9rem;
+  border: 1px solid rgba(107, 82, 53, 0.45);
+  outline: 1px solid rgba(107, 82, 53, 0.25);
+  outline-offset: 4px;
+  pointer-events: none;
+}
+
+/* ---------- Heading ---------- */
+
+header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: var(--moss);
+}
+
+h1 {
+  margin: 0.4rem 0 0;
+  font-weight: 900;
+  font-size: clamp(2.75rem, 10vw, 4.75rem);
+  line-height: 1;
+  color: var(--rust);
+  text-shadow: 1px 1px 0 rgba(255, 245, 220, 0.5);
+}
+
+.subtitle {
+  margin: 0.75rem 0 0;
+  font-size: clamp(0.95rem, 2.8vw, 1.2rem);
+  color: var(--ink-soft);
+}
+
+.flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin: 1.75rem auto 0;
+  max-width: 20rem;
+  font-size: 1.6rem;
+  color: var(--ochre);
+}
+
+.flourish span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to var(--dir, right), transparent, var(--ochre));
+}
+
+.flourish span:last-child {
+  --dir: left;
+}
+
+.flourish.small {
+  margin: 2.25rem auto;
+  max-width: 10rem;
+  font-size: 1rem;
+}
+
+/* ---------- Body text ---------- */
+
+.manuscript > p {
+  margin: 0 0 1.4em;
+  font-size: clamp(1rem, 2.4vw, 1.15rem);
+  line-height: 1.85;
+  text-align: left;
+}
+
+.opening::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  padding: 0.05em 0.12em 0;
+  font-weight: 900;
+  font-size: 4.1em;
+  line-height: 0.85;
+  color: var(--parchment);
+  background: var(--moss);
+  border: 2px solid var(--ochre);
+  box-shadow: inset 0 0 0 3px var(--moss), inset 0 0 0 4px var(--ochre);
+}
+
+q {
+  quotes: "\201C" "\201D";
+  font-weight: 700;
+  color: var(--rust);
+}
+
+.closing {
+  font-weight: 700;
+  color: var(--moss);
+}
+
+/* ---------- Colophon ---------- */
+
+.manuscript footer {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.manuscript footer .flourish {
+  margin-top: 0;
+}
+
+.manuscript footer p {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  color: var(--ink-soft);
+}
