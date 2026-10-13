@@ -40,7 +40,21 @@ You start with 100 seconds of hunger. Dogs, homeowners, and cars each cost 8 sec
 
 The static game works without the server. Its leaderboard is clearly labeled **ON THIS DEVICE**, saves in browser storage, and is separate for each browser. It does not pretend those scores are global. If browser storage is blocked, the results screen still shows your score.
 
+### Shared leaderboard (Cloudflare Worker + D1) — what the live site uses
+
+`npm run build` reads `.env.production`, which points the game at `https://sandwich-api.contact-bbc.workers.dev/api/`. The Worker in `../worker/` stores scores in the D1 database `sandwich-leaderboard`; see `../README.md` for setup and deploy. If the Worker can't be reached, the game falls back to the on-device leaderboard.
+
+A finished round is submitted as:
+
+```json
+{ "player_name": "HoagieHunter69", "points": 8290, "time_ms": 14900, "incidents": 1, "hunger_ms": 77100, "checked": 1, "token": "…" }
+```
+
+`hunger_ms` and `checked` let the backend recompute `points` with `checkResult()` in `src/rules.js` rather than trusting the browser. The Node server below and the Worker share that function, so they accept exactly the same rounds.
+
 ### Shared leaderboard (Node hosting)
+
+Used by `npm run dev` (via the Vite proxy) and `npm start`.
 
 Deploy this project to a host that can run Node 22.12+ with **persistent disk**. The server serves the built files from the sibling `../game/` folder, so deploy it alongside that folder. Run `npm ci`, `npm run build`, then `npm start`. Set `HOST=0.0.0.0` if your host requires it, `PORT` to the host's port, and `DATA_DIR` to a persistent writable directory. By default, scores are stored in `data/leaderboard.json`.
 

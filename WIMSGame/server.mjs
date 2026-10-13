@@ -4,7 +4,7 @@ import { createReadStream } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { dirname, resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { scoreFor, safeName, ROUND_SECONDS, HIT_COST } from './src/rules.js';
+import { checkResult } from './src/rules.js';
 
 const project = dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.json': 'application/json' };
@@ -69,12 +69,10 @@ export async function createGameServer({ root = resolve(project, '..', 'game'), 
         }
         if (path === '/api/scores' && req.method === 'POST') {
           const data = await body(req); const run = runs.get(data.token);
-          if (!run || run.seed !== data.seed || clock() - run.at > 60 * 60 * 1000) { reply(res, 400, { error: 'Invalid or expired round' }); return; }
-          const wallTime = (clock() - run.at) / 1000;
-          if (!Number.isFinite(data.elapsed) || data.elapsed < 3 || data.elapsed > ROUND_SECONDS + 0.5 || data.elapsed > wallTime + 2 || !Number.isFinite(data.hunger) || data.hunger <= 0 || data.hunger > ROUND_SECONDS || !Number.isInteger(data.hits) || data.hits < 0 || data.hits > Math.ceil(ROUND_SECONDS / HIT_COST) || !Number.isInteger(data.checked) || data.checked < 1 || data.checked > 16 || data.hunger > ROUND_SECONDS - data.elapsed - data.hits * HIT_COST + 0.1) {
-            reply(res, 400, { error: 'Invalid round result' }); return;
-          }
-          const entry = { name: safeName(data.name), score: scoreFor(data.hunger, data.hits, data.checked), elapsed: Math.round(data.elapsed * 10) / 10, date: new Date(clock()).toISOString() };
+          if (!run || clock() - run.at > 60 * 60 * 1000) { reply(res, 400, { error: 'Invalid or expired round' }); return; }
+          const row = checkResult(data, (clock() - run.at) / 1000);
+          if (!row) { reply(res, 400, { error: 'Invalid round result' }); return; }
+          const entry = { name: row.player_name, score: row.points, elapsed: Math.round(row.time_ms / 100) / 10, date: new Date(clock()).toISOString() };
           // Reserve the ticket before awaiting disk, so parallel requests cannot reuse it.
           runs.delete(data.token);
           const save = persistence.then(async () => {
@@ -85,7 +83,7 @@ export async function createGameServer({ root = resolve(project, '..', 'game'), 
           persistence = save.catch(() => {});
           try { await save; }
           catch (error) { runs.set(data.token, run); throw error; }
-          reply(res, 201, { score: entry.score }); return;
+          reply(res, 201, { points: entry.score }); return;
         }
         reply(res, 404, { error: 'Not found' }); return;
       }

@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sandwich-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sandwich-leaderboard",
+      // From `npx wrangler d1 list`, or the database's page in the Cloudflare dashboard.
+      "database_id": "2efd12a1-4974-49cf-8cff-1a867c16c3df",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": { "enabled": true }
+}

@@ -77,3 +77,16 @@ export function nearestPorch(x, z, houses) {
 export function safeName(name) {
   return String(name ?? '').normalize('NFKC').replace(/[^\p{L}\p{N} ._!'-]/gu, '').trim().slice(0, 18) || 'Hungry human';
 }
+
+// Validates a submitted round ({ player_name, time_ms, hunger_ms, incidents, checked }).
+// wallSeconds is the real time since the round's ticket was issued. Returns the row to
+// store, with points recomputed (never trusted from the client), or null if impossible.
+export function checkResult(data, wallSeconds) {
+  const { time_ms, hunger_ms, incidents, checked } = data ?? {};
+  if (![time_ms, hunger_ms, incidents, checked].every(Number.isInteger)) return null;
+  const elapsed = time_ms / 1000, hunger = hunger_ms / 1000;
+  if (elapsed < 3 || elapsed > ROUND_SECONDS + 0.5 || elapsed > wallSeconds + 2) return null;
+  if (hunger <= 0 || hunger > ROUND_SECONDS - elapsed - incidents * HIT_COST + 0.1) return null;
+  if (incidents < 0 || incidents > Math.ceil(ROUND_SECONDS / HIT_COST) || checked < 1 || checked > 16) return null;
+  return { player_name: safeName(data.player_name), points: scoreFor(hunger, incidents, checked), time_ms, incidents };
+}

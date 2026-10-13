@@ -98,8 +98,12 @@ function notify(message) {
   toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 2900);
 }
 
+// Production builds use the Cloudflare Worker (VITE_API_BASE in .env.production); otherwise the local Node server.
+const API_BASE = import.meta.env.VITE_API_BASE || new URL('api/', location.href).href;
+
 async function api(path, options = {}) {
-  const response = await fetch(new URL(`api/${path}`, new URL('.', location.href)), { ...options, signal: AbortSignal.timeout(4500), headers: { 'Content-Type': 'application/json' } });
+  const headers = options.body ? { 'Content-Type': 'application/json' } : {};
+  const response = await fetch(new URL(path, API_BASE), { ...options, signal: AbortSignal.timeout(4500), headers });
   if (!response.ok) throw new Error(`Leaderboard ${response.status}`);
   return response.json();
 }
@@ -335,7 +339,8 @@ async function saveScore(event) {
   let message;
   try {
     if (!ticket) throw new Error('Offline round');
-    await api('scores', { method: 'POST', body: JSON.stringify({ ...result, token: ticket }) });
+    const payload = { player_name: name, points: result.score, time_ms: Math.round(result.elapsed * 1000), incidents: result.hits, hunger_ms: Math.round(result.hunger * 1000), checked: result.checked, token: ticket };
+    await api('scores', { method: 'POST', body: JSON.stringify(payload) });
     message = 'Saved to the shared leaderboard. Lunch legend status: achieved.';
     boardMode = 'global';
   } catch {

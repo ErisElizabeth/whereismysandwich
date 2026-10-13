@@ -19,7 +19,7 @@ test('Shared leaderboard persists scores, recomputes points, and rejects reused 
     assert.equal((await fetch(api + 'scores')).status, 200);
     const { token } = await (await post('runs', { seed: 123 })).json();
     now += 10000;
-    const result = { token, seed: 123, name: '<Sam>', elapsed: 10, hunger: 90, hits: 0, checked: 1, score: 99999999 };
+    const result = { token, player_name: '<Sam>', time_ms: 10000, hunger_ms: 90000, incidents: 0, checked: 1, points: 99999999 };
     assert.equal((await post('scores', result)).status, 201);
     const saved = await (await fetch(api + 'scores')).json();
     assert.equal(saved.scores[0].name, 'Sam');
@@ -27,7 +27,7 @@ test('Shared leaderboard persists scores, recomputes points, and rejects reused 
     assert.equal((await post('scores', result)).status, 400);
     const badRun = await (await post('runs', { seed: 123 })).json();
     now += 10000;
-    assert.equal((await post('scores', { ...result, token: badRun.token, hunger: 100 })).status, 400);
+    assert.equal((await post('scores', { ...result, token: badRun.token, hunger_ms: 100000 })).status, 400);
     assert.equal((await post('runs', { seed: 123 }, { Origin: 'https://unrelated.example' })).status, 403);
     const concurrent = await (await post('runs', { seed: 123 })).json(); now += 10000;
     const responses = await Promise.all([post('scores', { ...result, token: concurrent.token }), post('scores', { ...result, token: concurrent.token })]);
