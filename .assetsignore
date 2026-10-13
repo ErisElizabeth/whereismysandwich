@@ -1,0 +1,12 @@
+# Files in the repo that aren't part of the public website (same syntax as .gitignore).
+# Everything else in the repo root is published to whereismysandwich.com.
+.git
+.github
+.gitignore
+.assetsignore
+.wrangler
+wrangler.jsonc
+node_modules
+README.md
+WIMSGame
+worker

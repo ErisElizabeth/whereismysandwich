@@ -12,17 +12,17 @@ The sandwich was real. The outrage is real.
 | `/tale.html` | `tale.html` — The Tale |
 | `/game/` | `game/` — The Game (built output, don't edit by hand) |
 
-## Uploading the site
+## Deploying the site
 
-Upload these to the web root:
+whereismysandwich.com is the Cloudflare Worker `whereismysandwich` (static files only), configured by `wrangler.jsonc` at the repo root. With the Worker connected to this repo (Cloudflare dashboard → Workers & Pages → `whereismysandwich` → Settings → Builds), every push to `main` deploys the site.
 
-- `index.html`
-- `tale.html`
-- `css/`
-- `assets/` (only `sandwich1-cutout.png` is used by the pages; the original JPG and `WIMS.docx` are source files)
-- `game/`
+The repo root is published, minus whatever `.assetsignore` lists: `WIMSGame/`, `worker/`, READMEs, and tooling files stay off the public site. To see exactly what would go live without deploying, run this from the repo root:
 
-Don't upload `WIMSGame/` or `worker/`. They're source code, not part of the public site.
+```
+npx wrangler deploy --dry-run
+```
+
+GitHub Pages (`eriselizabeth.github.io/whereismysandwich`) also builds from this repo, but the domain doesn't use it.
 
 ## Changing the game
 
@@ -32,7 +32,7 @@ Edit files in `WIMSGame/src/`, then rebuild from `WIMSGame/`:
 npm run build
 ```
 
-That regenerates `game/`. Re-upload `game/` afterwards.
+That regenerates `game/`. Commit and push it to deploy.
 
 ## Leaderboard (Cloudflare Worker + D1)
 

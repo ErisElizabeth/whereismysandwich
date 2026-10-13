@@ -1,0 +1,13 @@
+// The public website, whereismysandwich.com. Cloudflare Workers Builds deploys it on every push to main.
+// The repo root is the site; .assetsignore keeps source folders and tooling off it.
+// The leaderboard API is a separate Worker with its own config in worker/.
+{
+  "name": "whereismysandwich",
+  "compatibility_date": "2026-10-06",
+  "assets": { "directory": "." },
+  // whereismysandwich.com and www are attached in the Cloudflare dashboard. They're deliberately
+  // not listed here: listing them would make Wrangler take over managing them.
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": { "enabled": true }
+}
